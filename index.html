@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Lux Christi — a personal software engineering learning roadmap and project blueprint. What to learn, why, where it is used, and how it connects to Lux Christi.">
+  <title>Lux Christi — Software Engineering Learning & Building Blueprint</title>
+
+  <style>
+    /* =====================================================================
+       1. DESIGN TOKENS
+       CSS variables live on :root so the whole site can be re-themed
+       (dark / light) by changing a single attribute on <html>.
+       ===================================================================== */
+    :root {
+      --navy-900: #070d1a;
+      --navy-800: #0b1426;
+      --navy-700: #111d36;
+      --navy-600: #1a2a4a;
+      --blue-500: #2f6fed;
+      --blue-400: #4f8bff;
+      --blue-300: #8db4ff;
+      --gold-500: #c9a227;
+      --gold-400: #e0bd4a;
+      --charcoal: #1c1f26;
+      --white: #ffffff;
+
+      /* Semantic tokens (dark theme defaults) */
+      --bg: var(--navy-900);
+      --bg-elev: var(--navy-800);
+      --bg-card: var(--navy-700);
+      --bg-card-hover: var(--navy-600);
+      --border: rgba(141, 180, 255, 0.14);
+      --text: #e6ecf7;
+      --text-muted: #9aa8c4;
+      --accent: var(--blue-400);
+      --accent-strong: var(--blue-500);
+      --gold: var(--gold-400);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+      --radius: 14px;
+      --radius-sm: 8px;
+      --header-h: 64px;
+      --max-w: 1180px;
+      --font: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    [data-theme="light"] {
+      --bg: #f4f6fb;
+      --bg-elev: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #eef3ff;
+      --border: rgba(11, 20, 38, 0.12);
+      --text: #0f1a2e;
+      --text-muted: #4d5b78;
+      --accent: #1f57d6;
+      --accent-strong: #1a4bc0;
+      --gold: #a8861a;
+      --shadow: 0 10px 30px rgba(15, 26, 46, 0.08);
+    }
+
+    /* =====================================================================
+       2. BASE / RESET
+       ===================================================================== */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 16px); }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background-color .3s ease, color .3s ease;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    ul { margin: 0; padding: 0; list-style: none; }
+    h1, h2, h3, h4 { line-height: 1.2; margin: 0 0 .5em; }
+    p { margin: 0 0 1em; }
+    code, pre { font-family: var(--mono); }
+    button { font: inherit; cursor: pointer; }
+
+    /* Visible focus for keyboard users – never remove outlines, restyle them */
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+
+    .skip-link {
+      position: absolute; left: -999px; top: 8px;
+      background: var(--gold); color: #000; padding: .5rem 1rem; border-radius: 6px; z-index: 999;
+    }
+    .skip-link:focus { left: 8px; }
+
+    .container { width: min(100% - 2rem, var(--max-w)); margin-inline: auto; }
+    .section { padding: 4.5rem 0; }
+    .section-alt { background: var(--bg-elev); border-block: 1px solid var(--border); }
+    .section-head { max-width: 720px; margin-bottom: 2.5rem; }
+    .eyebrow {
+      display: inline-block; font-size: .75rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--gold); font-weight: 700; margin-bottom: .6rem;
+    }
+    .section-head h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); }
+    .section-head p { color: var(--text-muted); font-size: 1.05rem; }
+    .muted { color: var(--text-muted); }
+
+    /* =====================================================================
+       3. HEADER & NAVIGATION
+       ===================================================================== */
+    .site-header {
+      position: sticky; top: 0; z-index: 100; height: var(--header-h);
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .brand { display: flex; align-items: center; gap: .65rem; color: var(--text); font-weight: 700; letter-spacing: .02em; }
+    .brand:hover { text-decoration: none; }
+    .brand-mark {
+      width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--blue-500), var(--navy-600));
+      color: var(--gold-400); font-weight: 800; font-size: .95rem;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+    }
+    .brand small { display: block; font-size: .68rem; font-weight: 500; color: var(--text-muted); letter-spacing: .08em; text-transform: uppercase; }
+
+    .main-nav ul { display: flex; gap: .25rem; }
+    .main-nav a {
+      display: block; padding: .5rem .8rem; border-radius: 8px; color: var(--text-muted);
+      font-size: .92rem; font-weight: 500; transition: color .2s, background .2s;
+    }
+    .main-nav a:hover, .main-nav a.active { color: var(--text); background: var(--bg-card); text-decoration: none; }
+    .main-nav a.active { box-shadow: inset 0 -2px 0 var(--gold); }
+
+    .header-actions { display: flex; align-items: center; gap: .5rem; }
+    .icon-btn {
+      width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); display: grid; place-items: center;
+      transition: background .2s, transform .2s;
+    }
+    .icon-btn:hover { background: var(--bg-card-hover); }
+    .icon-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-toggle { display: none; }
+
+    /* =====================================================================
+       4. HERO
+       ===================================================================== */
+    .hero {
+      position: relative; overflow: hidden; padding: 5.5rem 0 4rem;
+      background:
+        radial-gradient(900px 400px at 10% -10%, rgba(47,111,237,.28), transparent 60%),
+        radial-gradient(700px 300px at 95% 10%, rgba(201,162,39,.16), transparent 60%);
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 3rem; align-items: center; }
+    .hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); letter-spacing: -.02em; }
+    .hero h1 span { color: var(--gold); }
+    .hero .lead { font-size: 1.15rem; color: var(--text-muted); max-width: 58ch; }
+    .hero-cta { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }
+    .btn {
+      display: inline-flex; align-items: center; gap: .5rem; padding: .8rem 1.3rem; border-radius: 10px;
+      font-weight: 600; border: 1px solid transparent; transition: transform .15s, background .2s, border-color .2s;
+    }
+    .btn:hover { transform: translateY(-2px); text-decoration: none; }
+    .btn-primary { background: var(--accent-strong); color: #fff; }
+    .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-ghost:hover { border-color: var(--accent); }
+
+    .formula {
+      display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: 2rem;
+      font-family: var(--mono); font-size: .85rem;
+    }
+    .formula span { padding: .35rem .7rem; border-radius: 999px; background: var(--bg-card); border: 1px solid var(--border); }
+    .formula i { color: var(--gold); font-style: normal; }
+
+    .not-app {
+      margin-top: 1.5rem; padding: .9rem 1.1rem; border-left: 3px solid var(--gold); background: var(--bg-card);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: .92rem; color: var(--text-muted);
+    }
+
+    /* Journey flow (vertical chain of steps) */
+    .journey {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.4rem; box-shadow: var(--shadow); max-height: 560px; overflow: auto;
+    }
+    .journey h2 { font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; }
+    .journey ol { list-style: none; margin: 0; padding: 0; counter-reset: step; }
+    .journey li {
+      position: relative; padding: .45rem 0 .45rem 2.4rem; font-size: .88rem; font-weight: 600; letter-spacing: .04em;
+    }
+    .journey li::before {
+      counter-increment: step; content: counter(step, decimal-leading-zero);
+      position: absolute; left: 0; top: .55rem; width: 1.7rem; height: 1.7rem; border-radius: 50%;
+      background: var(--navy-600); color: var(--blue-300); font-size: .65rem; display: grid; place-items: center;
+      font-family: var(--mono); border: 1px solid var(--border);
+    }
+    .journey li:not(:last-child)::after {
+      content: ""; position: absolute; left: .82rem; top: 2.2rem; width: 2px; height: calc(100% - 1.5rem);
+      background: linear-gradient(var(--accent), transparent);
+    }
+    .journey li.goal::before { background: var(--gold); color: #000; content: "★"; }
+    .journey li.goal { color: var(--gold); }
+
+    /* =====================================================================
+       5. ROADMAP (stages)
+       ===================================================================== */
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-bottom: 1.5rem;
+      position: sticky; top: var(--header-h); z-index: 20; padding: .75rem 0; background: var(--bg);
+    }
+    .search-wrap { position: relative; flex: 1 1 260px; }
+    .search-wrap svg { position: absolute; left: .8rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; stroke: var(--text-muted); fill: none; stroke-width: 2; }
+    .search-wrap input {
+      width: 100%; padding: .7rem .9rem .7rem 2.5rem; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font: inherit;
+    }
+    .search-wrap input::placeholder { color: var(--text-muted); }
+    .filters { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .chip {
+      padding: .45rem .85rem; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-card);
+      color: var(--text-muted); font-size: .82rem; font-weight: 600; transition: all .2s;
+    }
+    .chip:hover { color: var(--text); }
+    .chip[aria-pressed="true"] { background: var(--accent-strong); color: #fff; border-color: var(--accent-strong); }
+    .toolbar .btn-small { padding: .45rem .85rem; font-size: .82rem; border-radius: 999px; }
+    .result-count { font-size: .85rem; color: var(--text-muted); margin-bottom: 1rem; min-height: 1.2em; }
+
+    .stage-list { display: grid; gap: 1rem; }
+    .stage {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; transition: border-color .2s, box-shadow .2s;
+    }
+    .stage:hover { border-color: rgba(141,180,255,.35); }
+    .stage[open] { box-shadow: var(--shadow); border-color: rgba(141,180,255,.35); }
+    .stage summary {
+      list-style: none; cursor: pointer; display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center;
+      padding: 1.1rem 1.25rem;
+    }
+    .stage summary::-webkit-details-marker { display: none; }
+    .stage-num {
+      font-family: var(--mono); font-size: .8rem; color: var(--blue-300); background: var(--navy-600);
+      padding: .35rem .6rem; border-radius: 8px; border: 1px solid var(--border); white-space: nowrap;
+    }
+    [data-theme="light"] .stage-num { background: #e6eeff; color: #1f57d6; }
+    .stage-title h3 { font-size: 1.1rem; margin: 0 0 .2rem; }
+    .stage-title p { margin: 0; font-size: .88rem; color: var(--text-muted); }
+    .stage-meta { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .badge {
+      font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      padding: .25rem .55rem; border-radius: 6px; border: 1px solid transparent;
+    }
+    .badge-beginner { background: rgba(46,204,113,.14); color: #5fd48f; border-color: rgba(46,204,113,.3); }
+    .badge-intermediate { background: rgba(79,139,255,.14); color: var(--blue-300); border-color: rgba(79,139,255,.3); }
+    .badge-advanced { background: rgba(224,189,74,.14); color: var(--gold); border-color: rgba(224,189,74,.3); }
+    .badge-professional { background: rgba(255,99,132,.14); color: #ff8aa3; border-color: rgba(255,99,132,.3); }
+    .badge-future { background: rgba(201,162,39,.1); color: var(--gold); border: 1px dashed var(--gold); }
+    [data-theme="light"] .badge-beginner { color: #157a42; }
+    [data-theme="light"] .badge-intermediate { color: #1f57d6; }
+    [data-theme="light"] .badge-professional { color: #c0244a; }
+    .chevron { width: 18px; height: 18px; stroke: var(--text-muted); fill: none; stroke-width: 2; transition: transform .25s; }
+    .stage[open] .chevron { transform: rotate(180deg); }
+
+    .stage-body { padding: 0 1.25rem 1.4rem; border-top: 1px solid var(--border); animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+    .stage-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem; padding-top: 1.25rem; }
+    .stage-body h4 { font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; color: var(--text-muted); margin: 0 0 .6rem; }
+    .topic-list { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .topic-list li { font-size: .82rem; padding: .3rem .6rem; border-radius: 6px; background: var(--bg-elev); border: 1px solid var(--border); }
+    .info-block { margin-bottom: 1.1rem; }
+    .info-block p, .info-block ul { font-size: .93rem; color: var(--text); margin: 0; }
+    .info-block ul li { padding-left: 1.1rem; position: relative; margin-bottom: .2rem; }
+    .info-block ul li::before { content: "→"; position: absolute; left: 0; color: var(--gold); }
+    .lux-connect {
+      background: linear-gradient(135deg, rgba(47,111,237,.12), rgba(201,162,39,.08));
+      border: 1px solid rgba(201,162,39,.25); border-radius: var(--radius-sm); padding: .9rem 1rem;
+    }
+    .lux-connect h4 { color: var(--gold); }
+    .no-results { text-align: center; padding: 3rem 1rem; color: var(--text-muted); display: none; }
+
+    /* =====================================================================
+       6. PROJECT LAB (milestones)
+       ===================================================================== */
+    .milestones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .milestone {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem;
+      position: relative; transition: transform .2s, border-color .2s;
+    }
+    .milestone:hover { transform: translateY(-3px); border-color: rgba(201,162,39,.4); }
+    .milestone .num { font-family: var(--mono); color: var(--gold); font-size: .85rem; letter-spacing: .1em; }
+    .milestone h3 { font-size: 1.05rem; margin: .3rem 0 .4rem; }
+    .milestone .verb { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); }
+    .milestone ul { margin-top: .7rem; display: flex; flex-wrap: wrap; gap: .35rem; }
+    .milestone li { font-size: .78rem; padding: .22rem .55rem; border-radius: 6px; background: var(--bg-elev); border: 1px solid var(--border); }
+    .milestone .req { margin-top: .9rem; font-size: .78rem; color: var(--text-muted); }
+    .milestone .req strong { color: var(--accent); font-weight: 600; }
+
+    /* =====================================================================
+       7. TECHNOLOGY ROADMAP (horizontal flow)
+       ===================================================================== */
+    .legend { display: flex; flex-wrap: wrap; gap: 1rem; font-size: .85rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+    .legend span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: .4rem; vertical-align: -1px; }
+    .legend .l-now::before { background: var(--accent); }
+    .legend .l-future::before { background: transparent; border: 2px dashed var(--gold); }
+
+    .tech-flow { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+    .tech {
+      padding: .6rem .95rem; border-radius: 10px; font-weight: 600; font-size: .9rem;
+      background: var(--bg-card); border: 1px solid var(--border); position: relative;
+    }
+    .tech.now { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+    .tech.future { border: 1.5px dashed var(--gold); color: var(--text); }
+    .tech small { display: block; font-size: .65rem; font-weight: 500; color: var(--text-muted); letter-spacing: .06em; text-transform: uppercase; }
+    .arrow { color: var(--text-muted); font-size: 1.1rem; }
+
+    .callout {
+      margin-top: 1.5rem; padding: 1rem 1.2rem; border-radius: var(--radius-sm); background: var(--bg-card);
+      border: 1px solid var(--border); font-size: .93rem; display: flex; gap: .8rem; align-items: flex-start;
+    }
+    .callout strong { color: var(--gold); }
+
+    /* =====================================================================
+       8. TABLES
+       ===================================================================== */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: var(--bg-card); min-width: 560px; }
+    th, td { padding: .9rem 1.1rem; text-align: left; border-bottom: 1px solid var(--border); font-size: .92rem; }
+    th { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); background: var(--bg-elev); }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover td { background: var(--bg-card-hover); }
+    td:first-child { font-weight: 600; }
+    .tag { display: inline-block; font-size: .78rem; padding: .2rem .55rem; border-radius: 6px; background: var(--bg-elev); border: 1px solid var(--border); margin: .15rem .2rem .15rem 0; }
+    .tag.gold { border-color: rgba(201,162,39,.4); color: var(--gold); }
+
+    /* =====================================================================
+       9. DOCUMENTATION ROADMAP
+       ===================================================================== */
+    .doc-groups { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .doc-group { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; }
+    .doc-group h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .12em; color: var(--gold); margin-bottom: .8rem; }
+    .doc-group li { padding: .45rem 0; border-bottom: 1px dashed var(--border); font-size: .9rem; display: flex; gap: .6rem; align-items: baseline; }
+    .doc-group li:last-child { border-bottom: 0; }
+    .doc-group li::before { content: "▤"; color: var(--accent); font-size: .8rem; }
+
+    /* =====================================================================
+       10. PHILOSOPHY & MINDSET
+       ===================================================================== */
+    .principles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
+    .principle { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; }
+    .principle .num { font-family: var(--mono); color: var(--gold); font-size: .8rem; letter-spacing: .12em; }
+    .principle h3 { font-size: 1.35rem; margin: .4rem 0 .6rem; }
+    .principle p, .principle li { color: var(--text-muted); font-size: .95rem; }
+    .principle ul li { padding-left: 1.1rem; position: relative; }
+    .principle ul li::before { content: "•"; position: absolute; left: 0; color: var(--accent); }
+    .build-chain { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .8rem 0; font-family: var(--mono); font-size: .85rem; }
+    .build-chain span { padding: .3rem .65rem; border-radius: 6px; background: var(--bg-elev); border: 1px solid var(--border); color: var(--text); }
+
+    .mindset { display: grid; grid-template-columns: repeat(4, 1fr); gap: .8rem; }
+    .mind {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem;
+      display: flex; gap: .75rem; align-items: center; font-weight: 600; font-size: .92rem; transition: border-color .2s, transform .2s;
+    }
+    .mind:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .mind i {
+      flex: none; width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; font-style: normal;
+      background: linear-gradient(135deg, var(--blue-500), var(--navy-600)); color: #fff; font-size: .9rem;
+    }
+
+    /* =====================================================================
+       11. FOOTER
+       ===================================================================== */
+    .site-footer { padding: 3rem 0 2rem; border-top: 1px solid var(--border); font-size: .88rem; color: var(--text-muted); }
+    .footer-grid { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1.5rem; }
+    .stack { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
+    .stack span { font-family: var(--mono); font-size: .75rem; padding: .25rem .55rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); }
+
+    .back-top {
+      position: fixed; right: 1.2rem; bottom: 1.2rem; opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s;
+      transform: translateY(10px); z-index: 50;
+    }
+    .back-top.show { opacity: 1; pointer-events: auto; transform: none; }
+
+    /* Reduce motion for users who ask for it */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+
+    /* =====================================================================
+       12. RESPONSIVE (mobile-first overrides collapse layouts on small screens)
+       ===================================================================== */
+    @media (max-width: 1024px) {
+      .milestones { grid-template-columns: repeat(2, 1fr); }
+      .doc-groups { grid-template-columns: repeat(2, 1fr); }
+      .mindset { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 880px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .journey { max-height: none; }
+      .stage-grid { grid-template-columns: 1fr; }
+      .principles { grid-template-columns: 1fr; }
+
+      /* Mobile navigation: nav becomes a dropdown panel toggled by JS */
+      .nav-toggle { display: grid; }
+      .main-nav {
+        position: absolute; top: var(--header-h); left: 0; right: 0; background: var(--bg-elev);
+        border-bottom: 1px solid var(--border); padding: .75rem 1rem 1rem; display: none; box-shadow: var(--shadow);
+      }
+      .main-nav.open { display: block; }
+      .main-nav ul { flex-direction: column; gap: .15rem; }
+      .main-nav a { padding: .75rem .9rem; font-size: 1rem; }
+    }
+
+    @media (max-width: 600px) {
+      .section { padding: 3.2rem 0; }
+      .hero { padding: 3.5rem 0 3rem; }
+      .stage summary { grid-template-columns: auto 1fr; }
+      .stage-meta { grid-column: 1 / -1; justify-content: flex-start; }
+      .milestones, .doc-groups { grid-template-columns: 1fr; }
+      .mindset { grid-template-columns: repeat(2, 1fr); }
+      .brand small { display: none; }
+      .toolbar { position: static; }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ================= HEADER ================= -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#top" aria-label="Lux Christi Blueprint – home">
+        <span class="brand-mark" aria-hidden="true">LC</span>
+        <span>Lux Christi<small>Engineering Blueprint</small></span>
+      </a>
+
+      <nav class="main-nav" id="main-nav" aria-label="Primary">
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#roadmap">Roadmap</a></li>
+          <li><a href="#lab">Project Lab</a></li>
+          <li><a href="#technology">Technology</a></li>
+          <li><a href="#connections">Connections</a></li>
+          <li><a href="#documents">Documents</a></li>
+          <li><a href="#philosophy">Philosophy</a></li>
+          <li><a href="#mindset">Mindset</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch to light theme" aria-pressed="false">
+          <svg id="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4m11.4-11.4 1.4-1.4"/></svg>
+          <svg id="icon-moon" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="main-nav">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ================= HERO / OVERVIEW ================= -->
+    <section class="hero" id="overview" tabindex="-1">
+      <a id="top"></a>
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">Personal learning map · Project blueprint</span>
+          <h1>Lux Christi<br><span>Software Engineering Learning &amp; Building Blueprint</span></h1>
+          <p class="lead">
+            A visual reference system for the journey from beginner to professional software engineer —
+            with <strong>Lux Christi</strong> as the long-term project laboratory. The ultimate objective is to be able to
+            <em>design, build, secure, test, deploy and scale</em> Lux Christi professionally.
+          </p>
+
+          <div class="formula" aria-label="Blueprint formula">
+            <span>What to learn</span><i>→</i>
+            <span>Why to learn it</span><i>→</i>
+            <span>Where it is used</span><i>→</i>
+            <span>What I build in Lux Christi</span>
+          </div>
+
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#roadmap">Explore the roadmap</a>
+            <a class="btn btn-ghost" href="#lab">See the project lab</a>
+          </div>
+
+          <p class="not-app">
+            <strong>Note:</strong> This website is <em>not</em> the Lux Christi application. It is a static blueprint built
+            intentionally with only HTML5, CSS3 and Vanilla JavaScript — no frameworks, libraries, backend or database.
+          </p>
+        </div>
+
+        <aside class="journey" aria-labelledby="journey-title">
+          <h2 id="journey-title">The overall journey</h2>
+          <ol>
+            <li>Foundations</li>
+            <li>Web Development</li>
+            <li>JavaScript</li>
+            <li>Software Engineering</li>
+            <li>Data Structures &amp; Algorithms</li>
+            <li>Frontend Engineering</li>
+            <li>Backend Engineering</li>
+            <li>Databases</li>
+            <li>Security</li>
+            <li>Real-Time Systems</li>
+            <li>Live Video &amp; Audio</li>
+            <li>Cloud &amp; DevOps</li>
+            <li>Testing</li>
+            <li>AI Engineering</li>
+            <li>System Design &amp; Scalability</li>
+            <li>Professional Software Engineer</li>
+            <li class="goal">Lux Christi</li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= LEARNING ROADMAP ================= -->
+    <section class="section" id="roadmap" tabindex="-1">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Learning roadmap</span>
+          <h2>21 stages, in recommended order</h2>
+          <p>Each stage answers the same four questions: what to learn, why it matters, what to practice, and how it connects to Lux Christi. Open a stage to see the details.</p>
+        </div>
+
+        <div class="toolbar" role="search">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <label for="stage-search" class="sr-only" style="position:absolute;left:-9999px">Search roadmap</label>
+            <input id="stage-search" type="search" placeholder="Search topics, e.g. WebSockets, SQL, closures…" autocomplete="off">
+          </div>
+          <div class="filters" role="group" aria-label="Filter by level">
+            <button class="chip" type="button" data-level="all" aria-pressed="true">All</button>
+            <button class="chip" type="button" data-level="beginner" aria-pressed="false">Beginner</button>
+            <button class="chip" type="button" data-level="intermediate" aria-pressed="false">Intermediate</button>
+            <button class="chip" type="button" data-level="advanced" aria-pressed="false">Advanced</button>
+            <button class="chip" type="button" data-level="professional" aria-pressed="false">Professional</button>
+          </div>
+          <button class="btn btn-ghost btn-small" type="button" id="toggle-all" data-state="closed">Expand all</button>
+        </div>
+
+        <p class="result-count" id="result-count" aria-live="polite"></p>
+        <div class="stage-list" id="stage-list"></div>
+        <p class="no-results" id="no-results">No stages match your search. Try a different keyword.</p>
+      </div>
+    </section>
+
+    <!-- ================= PROJECT LAB ================= -->
+    <section class="section section-alt" id="lab" tabindex="-1">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Lux Christi project lab</span>
+          <h2>How the roadmap becomes the real system</h2>
+          <p>Fifteen development milestones, from vision to international scale. Each milestone lists the roadmap stages it depends on.</p>
+        </div>
+        <div class="milestones" id="milestones"></div>
+      </div>
+    </section>
+
+    <!-- ================= TECHNOLOGY ROADMAP ================= -->
+    <section class="section" id="technology" tabindex="-1">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Technology roadmap</span>
+          <h2>Technology progression</h2>
+          <p>The order in which technologies are studied. Solid outlines are used to build this blueprint site; dashed gold outlines are <strong>future Lux Christi technologies</strong>.</p>
+        </div>
+
+        <div class="legend" aria-hidden="true">
+          <span class="l-now">Used in this blueprint website</span>
+          <span class="l-future">Future Lux Christi technology (not used here)</span>
+        </div>
+
+        <div class="tech-flow" id="tech-flow"></div>
+
+        <div class="callout">
+          <span aria-hidden="true">⚑</span>
+          <p style="margin:0"><strong>Important:</strong> TypeScript, React, Next.js, backend runtimes, databases and cloud tooling belong to the <em>eventual</em> Lux Christi codebase. This blueprint deliberately stays at HTML + CSS + Vanilla JavaScript to reinforce the fundamentals.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FEATURE → TECHNOLOGY ================= -->
+    <section class="section section-alt" id="connections" tabindex="-1">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Feature → technology</span>
+          <h2>Where each technology will be used</h2>
+          <p>A quick reference connecting Lux Christi features to the main technologies that power them.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <caption style="position:absolute;left:-9999px">Lux Christi features and their main technologies</caption>
+            <thead><tr><th scope="col">Lux Christi feature</th><th scope="col">Main technologies</th></tr></thead>
+            <tbody id="feature-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DOCUMENTATION ROADMAP ================= -->
+    <section class="section" id="documents" tabindex="-1">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Engineering documentation</span>
+          <h2>Documents I will learn to write</h2>
+          <p>Professional engineering is documented engineering. These are the artefacts that will eventually describe Lux Christi.</p>
+        </div>
+        <div class="doc-groups" id="doc-groups"></div>
+      </div>
+    </section>
+
+    <!-- ================= LEARNING PHILOSOPHY ================= -->
+    <section class="section section-alt" id="philosophy" tabindex="-1">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Learning philosophy</span>
+          <h2>Four guiding principles</h2>
+        </div>
+        <div class="principles">
+          <article class="principle">
+            <span class="num">PRINCIPLE 01</span>
+            <h3>Understand before implementing.</h3>
+            <p>Never copy a pattern you cannot explain. Every technology on this roadmap is learned by understanding the problem it solves first, then the mechanics, then the implementation.</p>
+          </article>
+          <article class="principle">
+            <span class="num">PRINCIPLE 02</span>
+            <h3>Write code yourself.</h3>
+            <p>AI is used primarily as a:</p>
+            <ul>
+              <li>Tutor</li><li>Explainer</li><li>Reviewer</li><li>Debugging partner</li><li>Architecture discussion partner</li>
+            </ul>
+            <p style="margin-top:.6rem">— not as a replacement for learning.</p>
+          </article>
+          <article class="principle">
+            <span class="num">PRINCIPLE 03</span>
+            <h3>Build progressively.</h3>
+            <div class="build-chain" aria-label="Build progression">
+              <span>Simple</span>→<span>Correct</span>→<span>Tested</span>→<span>Maintainable</span>→<span>Scalable</span>
+            </div>
+            <p>Do not introduce advanced architecture before it is necessary. Complexity must be earned by a real requirement.</p>
+          </article>
+          <article class="principle">
+            <span class="num">PRINCIPLE 04</span>
+            <h3>Lux Christi is the main project laboratory.</h3>
+            <p>Every stage of learning eventually connects back to the real project. Practice exercises are chosen because they move Lux Christi closer to production quality.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROFESSIONAL MINDSET ================= -->
+    <section class="section" id="mindset" tabindex="-1">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Professional engineer mindset</span>
+          <h2>Engineering is more than coding</h2>
+          <p>A professional software engineer is measured across all of these areas — not only by the code they type.</p>
+        </div>
+        <div class="mindset" id="mindset-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <strong style="color:var(--text)">Lux Christi — Engineering Blueprint</strong>
+        <p style="margin:.3rem 0 0">A blueprint, not an application. The complexity belongs in the roadmap and in Lux Christi's eventual production architecture.</p>
+        <div class="stack" aria-label="Technologies used on this site"><span>HTML5</span><span>CSS3</span><span>Vanilla JS</span><span>No frameworks</span><span>No backend</span><span>No database</span></div>
+      </div>
+      <div>
+        <p style="margin:0">“What do I need to learn, in what order, and how will that knowledge eventually enable me to professionally design, build, secure, test, deploy and scale Lux Christi?”</p>
+      </div>
+    </div>
+  </footer>
+
+  <a class="btn btn-primary back-top" id="back-top" href="#top" aria-label="Back to top">↑</a>
+
+  <script>
+    /* =====================================================================
+       CONTENT DATA
+       The roadmap is stored as plain JavaScript arrays so that editing the
+       curriculum means editing data — not HTML markup. No storage, no state
+       persistence: this is display-only content.
+       ===================================================================== */
+    const STAGES = [
+      { n: 1, title: "Computer & Web Fundamentals", tagline: "What happens underneath every web application", level: "beginner",
+        learn: ["How computers work","CPU","Memory","Storage","Operating systems","Files & directories","Processes","Programs","Internet fundamentals","Client & server","IP addresses","DNS","Domains","HTTP","HTTPS","Requests & responses","URLs","Browsers","Web hosting","Static vs dynamic websites"],
+        why: "Understand what happens underneath every web application before writing one.",
+        practice: ["Trace a URL from address bar to rendered page","Inspect requests in browser DevTools (Network tab)","Host a static page and explain every step"],
+        lux: "Understand how users, browsers, servers and network infrastructure will communicate with Lux Christi.",
+        used: ["Every layer of the platform"] },
+      { n: 2, title: "HTML5", tagline: "Semantic, accessible document structure", level: "beginner",
+        learn: ["Semantic HTML","Document structure","Headings","Paragraphs","Links","Images","Forms","Inputs","Buttons","Tables","Lists","Multimedia","Accessibility","Metadata","SEO fundamentals"],
+        why: "HTML is the structural skeleton of every interface; good structure makes accessibility, styling and scripting easier.",
+        practice: ["Build structured webpages without frameworks","Mark up a competition results table and a registration form","Audit a page with a screen reader"],
+        lux: "Design the structural foundation of the Lux Christi interfaces.",
+        used: ["Landing pages","Competition pages","Host dashboard","Contestant interface","Admin interface","Social pages"] },
+      { n: 3, title: "CSS3", tagline: "Layout, responsiveness and visual identity", level: "beginner",
+        learn: ["Selectors","Cascade","Specificity","Box model","Display","Positioning","Flexbox","Grid","Responsive design","Media queries","Typography","Colors","CSS variables","Transitions","Animations","Dark/light interfaces","Mobile-first design"],
+        why: "Professional interfaces need deliberate layout systems, consistent theming and responsive behaviour.",
+        practice: ["Rebuild this blueprint's layout from scratch","Create a themeable design-token system with CSS variables","Build a responsive scoreboard layout with Grid"],
+        lux: "Create professional interfaces for the whole Lux Christi ecosystem.",
+        used: ["Design system","Scoreboards","Dashboards","Mobile viewer experience"] },
+      { n: 4, title: "JavaScript Fundamentals", tagline: "The programming foundation", level: "beginner",
+        learn: ["Variables","Data types","Operators","Conditions","Loops","Functions","Arrays","Objects","Scope","Methods","Error handling","Debugging","DOM","Events","Forms","User interaction"],
+        why: "JavaScript is the language of the browser and (later) the server; everything interactive depends on it.",
+        practice: ["Build a quiz timer and score counter","Validate a registration form in the browser","Filter and sort a list of contestants"],
+        lux: "Build interactive interfaces and understand the programming foundation required for the application.",
+        used: ["Interactive UI","Client-side validation","Competition widgets"] },
+      { n: 5, title: "Advanced JavaScript", tagline: "Asynchrony, closures and the event loop", level: "intermediate",
+        learn: ["Functions in depth","Scope","Closures","Higher-order functions","Callbacks","Promises","async/await","Modules","Classes","Prototypes","Event loop","Asynchronous programming","Error handling","State concepts","Memory concepts"],
+        why: "Complex applications are asynchronous and stateful; you must understand how JavaScript actually executes.",
+        practice: ["Write a small fetch-based data layer with retries","Implement a pub/sub event emitter","Model competition state with a reducer-style function"],
+        lux: "Prepare for complex application logic, asynchronous operations and real-time features.",
+        used: ["Competition state","Live updates","Data fetching"] },
+      { n: 6, title: "Git & GitHub", tagline: "Version control and collaboration", level: "beginner",
+        learn: ["Git fundamentals","Repository","Commit","Branch","Merge","Rebase","Pull request","Merge conflicts","Tags","Releases",".gitignore","Collaboration","Documentation"],
+        why: "Every professional codebase is versioned; Git is how engineers collaborate, review and ship safely.",
+        practice: ["Version this blueprint in a repository","Practice branching, merging and resolving conflicts","Write a good README and commit messages"],
+        lux: "Manage the Lux Christi codebase professionally.",
+        used: ["Codebase management","Releases","Code review"] },
+      { n: 7, title: "Software Engineering Fundamentals", tagline: "Engineering, not just coding", level: "intermediate",
+        learn: ["Requirements","Functional requirements","Non-functional requirements","SDLC","Agile","Waterfall","Planning","Estimation","Technical debt","Code quality","DRY","KISS","YAGNI","SOLID","Coupling","Cohesion","Refactoring","Documentation","Code review"],
+        why: "Software succeeds or fails on requirements, design decisions and maintainability — not syntax.",
+        practice: ["Write functional & non-functional requirements for one Lux Christi feature","Refactor an earlier project applying DRY/KISS","Review someone else's code"],
+        lux: "Learn how to engineer Lux Christi instead of simply writing code.",
+        used: ["Requirements","Planning","Code quality"] },
+      { n: 8, title: "Data Structures & Algorithms", tagline: "Algorithmic thinking and efficiency", level: "intermediate",
+        learn: ["Arrays","Linked lists","Stacks","Queues","Hash tables","Trees","Graphs","Recursion","Searching","Sorting","Big-O notation","Algorithmic thinking","Problem solving"],
+        why: "Ranking, matching, scheduling and search are algorithmic problems; efficiency matters at scale.",
+        practice: ["Implement a ranking algorithm with tie-breaking","Build a queue for contestant turns","Analyse the Big-O of your own code"],
+        lux: "Apply algorithms to the core competition logic.",
+        used: ["Competition logic","Ranking","Score processing","Search","Matching","Data processing","Scheduling"] },
+      { n: 9, title: "TypeScript", tagline: "Type safety for a professional codebase", level: "intermediate", future: true,
+        learn: ["Types","Interfaces","Type aliases","Generics","Union types","Narrowing","Utility types","Classes","Type-safe APIs","Strict mode"],
+        why: "Types catch whole categories of bugs early and make large codebases understandable and refactorable.",
+        practice: ["Type a competition domain model (User, Contestant, Question, Score)","Convert a JavaScript module to strict TypeScript"],
+        lux: "Use TypeScript later in the professional Lux Christi codebase. Important: TypeScript is NOT used in this blueprint website.",
+        used: ["Frontend codebase","Backend codebase","Shared domain types"] },
+      { n: 10, title: "React", tagline: "Component-based UI library for the professional frontend", level: "intermediate", future: true,
+        learn: ["JSX","Components","Props","State (useState)","Effects (useEffect)","Hooks","Custom hooks","Conditional rendering","Lists & keys","Controlled forms","Lifting state up","Context API","useReducer","Component composition","Rendering & reconciliation","Performance (memo, useMemo, useCallback)","Error boundaries","React with TypeScript","React Testing Library"],
+        why: "React is the industry-standard way to build large, interactive user interfaces from reusable components with predictable state. It is the foundation for Next.js and the professional Lux Christi frontend.",
+        practice: ["Rebuild the roadmap section of this blueprint as React components","Build a live scoreboard component driven by state","Create a host control panel with forms, context and a reducer","Type your components with TypeScript"],
+        lux: "Build the reusable component library and interactive screens of the Lux Christi frontend. Important: React is NOT used in this blueprint website — it is a future Lux Christi technology.",
+        used: ["Contestant interface","Host dashboard","Live scoreboard","Viewer experience","Admin panel","Social pages"] },
+      { n: 11, title: "Professional Frontend Engineering", tagline: "Component architecture and state", level: "advanced", future: true,
+        learn: ["Component architecture","State management","Routing","Forms","Data fetching","Error handling","Accessibility","Performance","Frontend architecture","Testing","React","TypeScript","Next.js"],
+        why: "Large user-facing applications need reusable components, predictable state and structured routing.",
+        practice: ["Build a component-based host dashboard prototype","Implement client-side routing and data loading","Measure and improve performance"],
+        lux: "Build the professional user-facing application.",
+        used: ["Contestant app","Host dashboard","Viewer experience","Admin panel"] },
+      { n: 12, title: "Backend Engineering", tagline: "APIs and business logic", level: "advanced", future: true,
+        learn: ["Servers","APIs","REST","HTTP methods","Validation","Business logic","Authentication","Authorization","Error handling","Logging","Rate limiting","API security","API versioning"],
+        why: "The backend enforces rules, protects data and coordinates every client; it is the source of truth.",
+        practice: ["Design a REST API for competitions and scores","Add validation, logging and rate limiting","Version an API without breaking clients"],
+        lux: "Power the competition system, users, social features, scoring and other backend functionality.",
+        used: ["Competition engine","User system","Social features","Scoring","Payments"] },
+      { n: 13, title: "Database Engineering", tagline: "Modelling and storing data reliably", level: "advanced", future: true,
+        learn: ["SQL","Tables","Relationships","Primary keys","Foreign keys","Constraints","Indexes","Transactions","Normalization","Query optimization","NoSQL concepts","Database trade-offs"],
+        why: "Data outlives code; a sound data model and safe transactions protect the integrity of competitions and finances.",
+        practice: ["Draw an ERD for Lux Christi","Write queries for rankings and results","Use transactions for score submission"],
+        lux: "Model and store all Lux Christi data.",
+        used: ["Users","Contestants","Competitions","Questions","Scores","Results","Social data","Financial records","Notifications","Audit records"] },
+      { n: 14, title: "Authentication & Authorization", tagline: "Identity, sessions and permissions", level: "advanced", future: true,
+        learn: ["Password security","Sessions","Tokens","JWT","OAuth","MFA","RBAC","Permissions","Account recovery","Device/session security"],
+        why: "Different roles (contestant, host, admin, viewer) need different powers; getting identity wrong compromises everything.",
+        practice: ["Implement secure login with hashed passwords","Design an RBAC permission matrix for Lux Christi roles","Add MFA and session revocation"],
+        lux: "Secure every role and sensitive operation on the platform.",
+        used: ["Contestants","Hosts","Administrators","Viewers","Financial operations","Competition controls"] },
+      { n: 15, title: "Cybersecurity", tagline: "Defending the platform", level: "advanced", future: true,
+        learn: ["OWASP Top 10","Threat modeling","Secure coding","XSS","CSRF","Injection","SSRF","Broken authentication","Authorization failures","Encryption","Secrets","Rate limiting","Account protection","Logging","Incident response"],
+        why: "A platform handling competitions, personal data and money will be attacked; security must be designed in.",
+        practice: ["Threat-model the competition engine","Fix deliberately vulnerable code (XSS, injection, CSRF)","Write an incident response checklist"],
+        lux: "Protect users, competition data, financial systems and the entire platform.",
+        used: ["All APIs","Financial system","Admin controls","User data"] },
+      { n: 16, title: "Real-Time Systems", tagline: "Live state across many clients", level: "professional", future: true,
+        learn: ["WebSockets","Server-Sent Events","Real-time state","Event-driven architecture","Pub/sub","Presence","Reconnection","Ordering","Idempotency","Message queues"],
+        why: "Live competitions require consistent, ordered updates delivered to hosts, contestants and viewers simultaneously.",
+        practice: ["Build a WebSocket live scoreboard","Handle reconnection and missed events","Make score updates idempotent"],
+        lux: "Power the live competition experience.",
+        used: ["Live scores","Competition events","Viewer updates","Host controls","Notifications","Real-time competition state"] },
+      { n: 17, title: "Live Video & Audio", tagline: "Broadcasting competitions", level: "professional", future: true,
+        learn: ["WebRTC","Audio/video fundamentals","STUN","TURN","Media servers","Encoding","Bitrate","Adaptive streaming","Latency","CDN","Recording","Replay","Network resilience"],
+        why: "Live broadcasting is mandatory for Lux Christi competitions and is one of the hardest engineering domains.",
+        practice: ["Establish a peer-to-peer WebRTC call","Stream through a media server to many viewers","Record and replay a session"],
+        lux: "Build the mandatory live competition broadcasting system.",
+        used: ["Live broadcast","Audio","Video","Recording","Replay"] },
+      { n: 18, title: "Cloud & DevOps", tagline: "Deploying and operating reliably", level: "professional", future: true,
+        learn: ["Linux","Servers","Containers","Docker","CI/CD","Cloud computing","Deployment","Environment variables","Secrets","Monitoring","Logging","Backups","Disaster recovery"],
+        why: "Software only creates value when it runs reliably in production and can be updated safely.",
+        practice: ["Containerize an API","Set up a CI/CD pipeline with automated tests","Configure monitoring, backups and alerts"],
+        lux: "Deploy and operate Lux Christi reliably.",
+        used: ["Production infrastructure","Monitoring","Backups","Scaling"] },
+      { n: 19, title: "Testing & QA", tagline: "Confidence before real competitions", level: "professional", future: true,
+        learn: ["Unit testing","Integration testing","End-to-end testing","API testing","Security testing","Load testing","Performance testing","Accessibility testing","Regression testing"],
+        why: "A live competition cannot be paused for a bug; testing turns hope into evidence.",
+        practice: ["Unit-test the scoring and ranking logic","Load-test the live scoreboard","Automate accessibility checks"],
+        lux: "Ensure the platform is reliable before real competitions.",
+        used: ["Features","APIs","Security","Performance","Real-time","Video/audio"] },
+      { n: 20, title: "AI Engineering", tagline: "Responsible AI features", level: "professional", future: true,
+        learn: ["AI APIs","LLMs","Prompt engineering","Structured outputs","RAG","Embeddings","Vector databases","AI evaluation","AI security","AI cost management","Privacy","Human oversight"],
+        why: "AI can assist with content, moderation and analysis — but only when evaluated, secured and overseen by humans.",
+        practice: ["Generate and validate quiz questions with structured outputs","Build a RAG pipeline over approved source material","Evaluate model outputs systematically"],
+        lux: "Potential applications inside Lux Christi.",
+        used: ["Question generation","Question validation","Translation","Speech recognition","Moderation assistance","Educational assistance","Analytics","Suspicious activity detection","Administrative assistance"] },
+      { n: 21, title: "System Design & Scalability", tagline: "From parish to international", level: "professional", future: true,
+        learn: ["System architecture","Distributed systems","Scalability","High availability","Fault tolerance","Caching","Queues","Load balancing","Observability","Disaster recovery","Capacity planning","Cost engineering","Data governance","Privacy","Architecture decision records"],
+        why: "Growth changes everything: architecture must handle many simultaneous competitions and viewers without failing.",
+        practice: ["Design Lux Christi for 10, 10 000 and 1 000 000 viewers","Write Architecture Decision Records","Plan capacity and cost per growth level"],
+        lux: "Prepare Lux Christi for growth: Parish → Deanery → Diocese → National → International.",
+        used: ["Diocesan events","National events","International events","Mass simultaneous viewers"] }
+    ];
+
+    const MILESTONES = [
+      { n: "01", verb: "Define", title: "Vision & Requirements", items: ["Problem","Users","Goals","Features","Functional requirements","Non-functional requirements"], req: "Stage 7" },
+      { n: "02", verb: "Model", title: "Domain Model", items: ["Users","Contestants","Hosts","Competitions","Questions","Answers","Scores","Results","Events","Social relationships","Financial entities"], req: "Stages 7, 8, 13" },
+      { n: "03", verb: "Define", title: "System Architecture", items: ["Frontend","Backend","Database","Authentication","Real-time layer","Video/audio","AI","Storage","Infrastructure"], req: "Stages 10–21" },
+      { n: "04", verb: "Design", title: "User Experience", items: ["Landing page","Authentication","Contestant experience","Host dashboard","Viewer experience","Admin panel","Social experience"], req: "Stages 2, 3, 4, 10, 11" },
+      { n: "05", verb: "Build", title: "Competition Engine", items: ["Competition creation","Registration","Qualification","Questions","Answers","Scoring","Ranking","Advancement"], req: "Stages 5, 8, 12, 13" },
+      { n: "06", verb: "Build", title: "Host Dashboard", items: ["Competition controls","Question controls","Scoring","Contestant management","Live scoreboard","Competition status"], req: "Stages 10, 11, 12, 14, 16" },
+      { n: "07", verb: "Build", title: "Live Competition", items: ["Live competition state","Real-time score updates","Host actions","Contestant responses","Viewer updates"], req: "Stage 16" },
+      { n: "08", verb: "Build", title: "Live Video & Audio", items: ["Live broadcast","Audio","Video","Recording","Replay"], req: "Stage 17" },
+      { n: "09", verb: "Build", title: "Social System", items: ["Profiles","Following","Followers","Posts","Comments","Likes","Notifications","Communities","Moderation"], req: "Stages 10, 11, 12, 13" },
+      { n: "10", verb: "Build", title: "Financial System", items: ["Payments","Prize management","Transactions","Wallet/balance concepts","Financial records","Audit trails"], req: "Stages 12, 13, 14, 15" },
+      { n: "11", verb: "Build", title: "AI System", items: ["Question assistance","Translation","Speech processing","Moderation assistance","Analytics","Anti-cheating assistance"], req: "Stage 20" },
+      { n: "12", verb: "Implement", title: "Security", items: ["Authentication security","Authorization","Encryption","Secure APIs","Rate limiting","Threat protection","Audit logging"], req: "Stages 14, 15" },
+      { n: "13", verb: "Test", title: "Testing", items: ["Features","APIs","Security","Performance","Accessibility","Real-time functionality","Video/audio","Failure scenarios"], req: "Stage 19" },
+      { n: "14", verb: "Prepare", title: "Deployment", items: ["Production infrastructure","Monitoring","Backups","Disaster recovery","CI/CD","Scaling"], req: "Stage 18" },
+      { n: "15", verb: "Prepare", title: "Growth", items: ["Diocesan competitions","National competitions","International competitions","Many simultaneous viewers","Many contestants"], req: "Stage 21" }
+    ];
+
+    // `now: true` marks technologies actually used to build this blueprint.
+    const TECH = [
+      { name: "HTML", now: true }, { name: "CSS", now: true }, { name: "JavaScript", now: true },
+      { name: "Git/GitHub", note: "workflow" }, { name: "Software Engineering", note: "discipline" }, { name: "Algorithms", note: "thinking" },
+      { name: "TypeScript", future: true }, { name: "React", future: true }, { name: "Next.js", future: true },
+      { name: "Backend", future: true }, { name: "Database", future: true }, { name: "Authentication", future: true },
+      { name: "Cybersecurity", future: true }, { name: "Real-Time Systems", future: true }, { name: "WebRTC / Streaming", future: true },
+      { name: "Cloud / DevOps", future: true }, { name: "Testing", future: true }, { name: "AI Engineering", future: true },
+      { name: "System Design", future: true }
+    ];
+
+    const FEATURES = [
+      ["User interface", ["HTML","CSS","JavaScript","React","TypeScript"]],
+      ["Authentication", ["Backend","Database","Security"]],
+      ["Competition engine", ["JavaScript/TypeScript","Backend","Database"]],
+      ["Live scoreboard", ["WebSockets / Real-Time Systems"]],
+      ["Live video", ["WebRTC / Streaming"]],
+      ["Social system", ["Frontend","Backend","Database"]],
+      ["Payments", ["Backend","APIs","Security"]],
+      ["Notifications", ["Backend","Real-Time Systems"]],
+      ["AI questions", ["AI APIs / AI Engineering"]],
+      ["Analytics", ["Backend","Data","AI"]],
+      ["Admin dashboard", ["Frontend","RBAC","Security"]],
+      ["Scaling", ["Cloud / DevOps","System Design"]]
+    ];
+
+    const DOCS = [
+      { group: "Product & Domain", items: ["Product Requirements Document","Functional Requirements","Non-Functional Requirements","Domain Model","System Context Diagram"] },
+      { group: "Architecture", items: ["Architecture Diagram","Database ERD","API Specification","Real-Time Architecture","Live Streaming Architecture","Financial Architecture","AI Architecture"] },
+      { group: "Security", items: ["Authentication Architecture","Authorization Model","Threat Model","Data Flow Diagram","Security Architecture"] },
+      { group: "Operations & Quality", items: ["Deployment Architecture","Disaster Recovery Plan","Observability Plan","Test Strategy","Release Strategy","Architecture Decision Records"] }
+    ];
+
+    const MINDSET = [
+      ["Problem solving","?"],["System thinking","⬡"],["Communication","✉"],["Documentation","▤"],
+      ["Architecture","▦"],["Security","⛨"],["Testing","✓"],["Debugging","⚙"],
+      ["Performance","⚡"],["Reliability","◆"],["Maintainability","✎"],["Scalability","↗"],
+      ["Team collaboration","☺"],["Git","⑂"],["Code review","👁"],["Technical decision-making","⚖"]
+    ];
+
+    /* =====================================================================
+       RENDER HELPERS
+       Content is built with template strings and inserted once on load.
+       All text comes from the constants above (trusted, static content).
+       ===================================================================== */
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const list = (arr, cls = "") => arr.map(t => `<li${cls ? ` class="${cls}"` : ""}>${t}</li>`).join("");
+
+    function renderStages() {
+      $("#stage-list").innerHTML = STAGES.map(s => {
+        // Searchable text is stored on the element so filtering is a simple string match.
+        const haystack = [s.title, s.tagline, s.why, s.lux, ...s.learn, ...s.used].join(" ").toLowerCase();
+        return `
+        <details class="stage" data-level="${s.level}" data-search="${haystack.replace(/"/g, "")}">
+          <summary>
+            <span class="stage-num">STAGE ${String(s.n).padStart(2, "0")}</span>
+            <span class="stage-title"><h3>${s.title}</h3><p>${s.tagline}</p></span>
+            <span class="stage-meta">
+              <span class="badge badge-${s.level}">${s.level}</span>
+              ${s.future ? `<span class="badge badge-future">Future Lux Christi tech</span>` : ""}
+              <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="stage-body">
+            <div class="stage-grid">
+              <div>
+                <div class="info-block"><h4>What to learn</h4><ul class="topic-list">${list(s.learn)}</ul></div>
+                <div class="info-block"><h4>Practice / build</h4><ul>${list(s.practice)}</ul></div>
+              </div>
+              <div>
+                <div class="info-block"><h4>Why it matters</h4><p>${s.why}</p></div>
+                <div class="info-block lux-connect">
+                  <h4>Lux Christi connection</h4>
+                  <p>${s.lux}</p>
+                  <h4 style="margin-top:.8rem">Where it will be used</h4>
+                  <ul class="topic-list">${list(s.used)}</ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>`;
+      }).join("");
+    }
+
+    function renderMilestones() {
+      $("#milestones").innerHTML = MILESTONES.map(m => `
+        <article class="milestone">
+          <span class="num">${m.n}</span>
+          <h3>${m.title}</h3>
+          <span class="verb">${m.verb}</span>
+          <ul>${list(m.items)}</ul>
+          <p class="req">Requires: <strong>${m.req}</strong></p>
+        </article>`).join("");
+    }
+
+    function renderTech() {
+      $("#tech-flow").innerHTML = TECH.map((t, i) => {
+        const cls = t.now ? "now" : t.future ? "future" : "";
+        const small = t.now ? "<small>used here</small>" : t.future ? "<small>future</small>" : (t.note ? `<small>${t.note}</small>` : "");
+        return `<span class="tech ${cls}">${t.name}${small}</span>${i < TECH.length - 1 ? '<span class="arrow" aria-hidden="true">→</span>' : ""}`;
+      }).join("");
+    }
+
+    function renderFeatures() {
+      $("#feature-table").innerHTML = FEATURES.map(([f, techs]) =>
+        `<tr><td>${f}</td><td>${techs.map(t => `<span class="tag">${t}</span>`).join("")}</td></tr>`).join("");
+    }
+
+    function renderDocs() {
+      $("#doc-groups").innerHTML = DOCS.map(d => `<div class="doc-group"><h3>${d.group}</h3><ul>${list(d.items)}</ul></div>`).join("");
+    }
+
+    function renderMindset() {
+      $("#mindset-grid").innerHTML = MINDSET.map(([label, icon]) => `<div class="mind"><i aria-hidden="true">${icon}</i>${label}</div>`).join("");
+    }
+
+    /* =====================================================================
+       INTERACTIONS
+       ===================================================================== */
+
+    // --- Theme toggle (kept in memory only; no persistence by design) ---
+    function initTheme() {
+      const btn = $("#theme-toggle"), sun = $("#icon-sun"), moon = $("#icon-moon"), root = document.documentElement;
+      // Respect the OS preference on first load.
+      if (window.matchMedia("(prefers-color-scheme: light)").matches) root.dataset.theme = "light";
+      const sync = () => {
+        const light = root.dataset.theme === "light";
+        sun.style.display = light ? "none" : "";
+        moon.style.display = light ? "" : "none";
+        btn.setAttribute("aria-pressed", String(light));
+        btn.setAttribute("aria-label", light ? "Switch to dark theme" : "Switch to light theme");
+      };
+      btn.addEventListener("click", () => { root.dataset.theme = root.dataset.theme === "light" ? "dark" : "light"; sync(); });
+      sync();
+    }
+
+    // --- Mobile navigation ---
+    function initNav() {
+      const toggle = $("#nav-toggle"), nav = $("#main-nav");
+      const close = () => { nav.classList.remove("open"); toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", "Open navigation"); };
+      toggle.addEventListener("click", () => {
+        const open = nav.classList.toggle("open");
+        toggle.setAttribute("aria-expanded", String(open));
+        toggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+      });
+      nav.addEventListener("click", e => { if (e.target.matches("a")) close(); });
+      document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+    }
+
+    // --- Active navigation highlighting while scrolling ---
+    function initScrollSpy() {
+      const links = [...document.querySelectorAll(".main-nav a")];
+      const sections = links.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === `#${entry.target.id}`));
+        });
+      }, { rootMargin: "-40% 0px -55% 0px" }); // triggers when a section crosses the middle of the viewport
+      sections.forEach(s => observer.observe(s));
+    }
+
+    // --- Roadmap search + level filter + expand/collapse ---
+    function initRoadmapControls() {
+      const input = $("#stage-search"), chips = [...document.querySelectorAll(".chip")], stages = [...document.querySelectorAll(".stage")];
+      const count = $("#result-count"), empty = $("#no-results"), toggleAll = $("#toggle-all");
+      let level = "all";
+
+      function applyFilters() {
+        const q = input.value.trim().toLowerCase();
+        let visible = 0;
+        stages.forEach(st => {
+          const match = (level === "all" || st.dataset.level === level) && (!q || st.dataset.search.includes(q));
+          st.hidden = !match;
+          if (match) { visible++; if (q) st.open = true; } // auto-expand matches so the hit is visible
+        });
+        count.textContent = `${visible} of ${stages.length} stages shown`;
+        empty.style.display = visible ? "none" : "block";
+      }
+
+      input.addEventListener("input", applyFilters);
+      chips.forEach(chip => chip.addEventListener("click", () => {
+        level = chip.dataset.level;
+        chips.forEach(c => c.setAttribute("aria-pressed", String(c === chip)));
+        applyFilters();
+      }));
+      toggleAll.addEventListener("click", () => {
+        const opening = toggleAll.dataset.state === "closed";
+        stages.forEach(st => { if (!st.hidden) st.open = opening; });
+        toggleAll.dataset.state = opening ? "open" : "closed";
+        toggleAll.textContent = opening ? "Collapse all" : "Expand all";
+      });
+      applyFilters();
+    }
+
+    // --- Back-to-top button ---
+    function initBackTop() {
+      const btn = $("#back-top");
+      window.addEventListener("scroll", () => btn.classList.toggle("show", window.scrollY > 600), { passive: true });
+    }
+
+    // Boot: render static content first, then wire up behaviour.
+    renderStages(); renderMilestones(); renderTech(); renderFeatures(); renderDocs(); renderMindset();
+    initTheme(); initNav(); initScrollSpy(); initRoadmapControls(); initBackTop();
+  </script>
+</body>
+</html>
